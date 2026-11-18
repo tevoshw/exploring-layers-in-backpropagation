@@ -60,6 +60,33 @@ To compute these gradients, each layer reuses values saved during the forward pa
 
 ## Linears
 
+$$
+Y = XW + b
+$$
+
+During *backpropagation*, the layer receives the gradient coming from the subsequent layer ($\frac{\partial L}{\partial Y}$, or `grad_output`) and applies the **Chain Rule** (multiplying the incoming error by the local derivative of each component):
+
+* **Weights Gradient ($\frac{\partial L}{\partial W}$):**
+  We want to measure how much the current layer's weights impact the final loss. Since the local derivative of $Y$ with respect to $W$ is the input $X$ itself, we apply the chain rule by multiplying the transposed input by the incoming gradient:
+
+  $$
+  \frac{\partial L}{\partial W} = X^T \cdot \frac{\partial L}{\partial Y}
+  $$
+
+* **Input / Backprop Gradient ($\frac{\partial L}{\partial X}$):**
+  We want to measure how much the input $X$ (which is the output from the previous layer) impacts the final loss, so we can pass this error signal backward. Since the local derivative of $Y$ with respect to $X$ is the weights matrix $W$, we multiply the incoming gradient by the transposed weights:
+
+  $$
+  \frac{\partial L}{\partial X} = \frac{\partial L}{\partial Y} \cdot W^T
+  $$
+
+* **Bias Gradient ($\frac{\partial L}{\partial b}$):**
+  Since the bias is simply added ($+ b$), its local derivative is **1**. By the chain rule, the incoming error passes through multiplied by 1, and is simply **summed across the entire batch** (since the same bias vector is shared across all samples):
+
+  $$
+  \frac{\partial L}{\partial b} = \sum_{i=1}^{N} \frac{\partial L}{\partial Y}[i, :]
+  $$
+
 ## Embeddings
 
 ### RoPE
